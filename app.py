@@ -21,19 +21,34 @@ def detect_pillars(image):
     output_image = image.copy()
     pillars_points = []  # This will store the points for each pillar
     
-    for contour in contours:
-        # Calculate area and bounding box
+    # for contour in contours:
+    #     # Calculate area and bounding box
+    #     area = cv2.contourArea(contour)
+    #     x, y, w, h = cv2.boundingRect(contour)
+
+    #     # Filter out small objects and non-pillar-like shapes
+    #     aspect_ratio = float(w) / h
+    #     if area > MIN_AREA and h > MIN_HEIGHT and 0.1 <= aspect_ratio <= 0.8:
+    #         # Generate a new random color for each pillar
+    #         color = tuple(np.random.randint(0, 256, size=3).tolist())
+    #         cv2.drawContours(output_image, [contour], -1, color, 2)  
+    #         points = contour.reshape(-1, 2)  
+    #         pillars_points.append(points)  
+
+    for idx, contour in enumerate(contours):
+    # Calculate area and bounding box
         area = cv2.contourArea(contour)
         x, y, w, h = cv2.boundingRect(contour)
 
-        # Filter out small objects and non-pillar-like shapes
-        aspect_ratio = float(w) / h
-        if area > MIN_AREA and h > MIN_HEIGHT and 0.1 <= aspect_ratio <= 0.8:
+        # Filter out small noise by area or height
+        if area > MIN_AREA and h > MIN_HEIGHT:
             # Generate a new random color for each pillar
-            color = tuple(np.random.randint(0, 256, size=3).tolist())
-            cv2.drawContours(output_image, [contour], -1, color, 2)  
-            points = contour.reshape(-1, 2)  
-            pillars_points.append(points)  
+            color = tuple(np.random.randint(0, 256, size=3).tolist())  # Random RGB color
+            cv2.drawContours(output_image, [contour], -1, color, 2)  # Draw contour with the generated color
+
+            # Collect points of the contour
+            points = contour.reshape(-1, 2)  # Flatten contour to get points
+            pillars_points.append(points)
     
     return output_image, pillars_points  
 
